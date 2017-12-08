@@ -1,0 +1,15 @@
+{
+  "name": "linkstaterouting",
+  "version": "1.0.0",
+  "description": "create a virtual network of routers that send routing data to one another",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lindsay Portelli, Sayan Mukherjee",
+  "license": "MIT",
+  "dependencies": {
+    "linebyline": "^1.3.0",
+    "readline-sync": "^1.4.7"
+  }
+}
