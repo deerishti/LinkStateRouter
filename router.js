@@ -2,7 +2,9 @@ class Router {
     constructor(id, network) {
         this.id = id;
         this.network = network;
-        this.routing_table = []; // could be implemented as  an adjacency matrix or adjacency list
+        // a dictionary that stores references to other "directly" connected routers
+        this.routing_table = new Map(); // key: router id, value: cost
+        this.network_graph = new Map(); // key: router id (edge), value: an array of all directly connected edges
     }
 
     originatePacket() {

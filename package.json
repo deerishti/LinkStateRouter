@@ -4,7 +4,8 @@
   "description": "create a virtual network of routers that send routing data to one another",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
   },
   "author": "Lindsay Portelli, Sayan Mukherjee",
   "license": "MIT",
