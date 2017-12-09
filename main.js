@@ -3,7 +3,7 @@ require('./router.js');
 let readline_sync = require("readline-sync");
 let readline = require("linebyline");
 const DEFAULT_COST = 1;
-let arrRouters = new Map;
+let arrRouters = new Map();
 let router;
 
 // method to bootstrap the App
@@ -35,6 +35,7 @@ let readNetworkFile = function () {
         // add last initialized router to array
         arrRouters.set(router.id, router);
         buildNetworkGraph();
+        readUserOption();
     });
 };
 
@@ -49,6 +50,58 @@ let buildNetworkGraph = function() {
             console.log(key + ' => ' + value);
         });
     });
+};
+
+let readUserOption = function () {
+    console.log('\n\nEnter');
+    console.log('\nQ to quit');
+    console.log('\nC to continue');
+    console.log("\nS followed by the router's ID to shut down the router");
+    console.log("\nT followed by the router's ID to start up the router");   
+    console.log("\nP followed by the router's ID to print the routing table\n");
+
+    let userEntry = readline_sync.question("I choose: ");
+    let userOption = userEntry.slice(0, 1);
+    let id = userEntry.slice(1);
+
+    switch(userOption) {
+        case 'Q': return;
+        case 'C': propagatePacket();
+                  break;
+        case 'S': shutDownRouter(id);
+                  break;
+        case 'T': startUpRouter(id);
+                  break;
+        case 'P': printNetwork(id);
+                  break;
+        default: console.log('ERROR! ' + userOption + ' is invalid.');
+    }
+
+    readUserOption(); // recursively call itself till quit
+};
+
+let propagatePacket = function () {
+
+};
+
+let shutDownRouter = function (id) {
+
+};
+
+let startUpRouter = function (id) {
+
+};
+
+let printNetwork = function (id) {
+    let rID = id.trim();
+    if (isNaN(rID)) { // TODO: empty string
+        console.log("\nInvalid router ID.");
+    } else {
+        let router = arrRouters.get(rID); // TODO: key not found
+        router.routing_table.forEach(function (value, key) {
+                    console.log(key + ' => ' + value);
+        });
+    }
 };
 
 init();
