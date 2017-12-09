@@ -53,7 +53,8 @@ let buildNetworkGraph = function() {
 };
 
 let readUserOption = function () {
-    console.log('\n\nEnter');
+    console.log('\n****************************************************');
+    console.log('\nEnter');
     console.log('\nQ to quit');
     console.log('\nC to continue');
     console.log("\nS followed by the router's ID to shut down the router");
