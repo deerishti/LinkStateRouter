@@ -3,7 +3,7 @@ class LSP {
         this.origin_router_id = originID;
         this.sequence = seq;
         this.ttl = 10;
-        this.listOfSinglyLists = []; // treating the list as an Array for now list of SinglyLists
+        this.list = []; // treating the list as an Array for now list of SinglyLists
     }
 };
 
@@ -44,7 +44,7 @@ class SinglyList() {
     this._length++;
 
     return node;
-};
+}
 
 searchNodeAt(position) {
     var currentNode = this.head,
@@ -64,4 +64,44 @@ searchNodeAt(position) {
     }
 
     return currentNode;
-};
+}
+
+remove(position) {
+    var currentNode = this.head,
+        length = this._length,
+        count = 0,
+        message = {failure: 'Failure: non-existent node in this list.'},
+        beforeNodeToDelete = null,
+        nodeToDelete = null,
+        deletedNode = null;
+
+    // 1st use-case: an invalid position
+    if (position < 0 || position > length) {
+        throw new Error(message.failure);
+    }
+
+    // 2nd use-case: the first node is removed
+    if (position === 1) {
+        this.head = currentNode.next;
+        deletedNode = currentNode;
+        currentNode = null;
+        this._length--;
+
+        return deletedNode;
+    }
+
+    // 3rd use-case: any other node is removed
+    while (count < position) {
+        beforeNodeToDelete = currentNode;
+        nodeToDelete = currentNode.next;
+        count++;
+    }
+
+    beforeNodeToDelete.next = nodeToDelete.next;
+    deletedNode = nodeToDelete;
+    nodeToDelete = null;
+    this._length--;
+
+    return deletedNode;
+}
+}
