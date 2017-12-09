@@ -40,9 +40,9 @@ let readNetworkFile = function () {
 };
 
 /*
-// iterate through router array and 
+    Iterate over arrRouters map and 
     build each router's network graph
-    */
+*/
 let buildNetworkGraph = function() {
     arrRouters.forEach(function(router, router_id) {
         console.log('\n' + router_id);
@@ -80,26 +80,42 @@ let readUserOption = function () {
     readUserOption(); // recursively call itself till quit
 };
 
+/*
+    Iterate over arrRouters map and 
+    call each router's originatePacket()
+*/
 let propagatePacket = function () {
-
+    arrRouters.forEach(function(router, router_id) {
+        router.originatePacket();
+    });
 };
 
 let shutDownRouter = function (id) {
-
+    let rID = id.trim();
+    if (isNaN(parseInt(rID)) || !arrRouters.has(rID)) {
+        console.log("\nInvalid router ID: " + rID);
+    } else {
+        arrRouters.get(rID).active = false;
+    }
 };
 
 let startUpRouter = function (id) {
-
+    let rID = id.trim();
+    if (isNaN(parseInt(rID)) || !arrRouters.has(rID)) {
+        console.log("\nInvalid router ID: " + rID);
+    } else {
+        arrRouters.get(rID).active = true;
+    }
 };
 
 let printNetwork = function (id) {
     let rID = id.trim();
-    if (isNaN(rID)) { // TODO: empty string
-        console.log("\nInvalid router ID.");
+    if (isNaN(parseInt(rID)) || !arrRouters.has(rID)) {
+        console.log("\nInvalid router ID: " + rID);
     } else {
-        let router = arrRouters.get(rID); // TODO: key not found
+        let router = arrRouters.get(rID);
         router.routing_table.forEach(function (value, key) {
-                    console.log(key + ' => ' + value);
+            console.log(key + ' => ' + value);
         });
     }
 };
