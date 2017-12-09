@@ -3,7 +3,7 @@ require('./router.js');
 let readline_sync = require("readline-sync");
 let readline = require("linebyline");
 const DEFAULT_COST = 1;
-let arrRouters = [];
+let arrRouters = new Map;
 let router;
 
 // method to bootstrap the App
@@ -25,7 +25,7 @@ let readNetworkFile = function () {
         if (elements.length > 1 && isNaN(elements[1])) { // isNaN is to check if line contains network name
             if (router) {
                 // add router to array of routers
-                arrRouters.push(router);
+                arrRouters.set(router.id, router);
             }
             router = new Router(elements[0], elements[1]);
         } else {
@@ -33,22 +33,22 @@ let readNetworkFile = function () {
         }
     }).on('end', function() {
         // add last initialized router to array
-        arrRouters.push(router);
+        arrRouters.set(router.id, router);
         buildNetworkGraph();
     });
+};
 
-    /*
-    // iterate through router array and 
-       build each router's network graph
-     */
-    let buildNetworkGraph = function() {
-       for (let i = 0; i < arrRouters.length; i++) {
-           console.log('\n' + arrRouters[i].id);
-           arrRouters[i].routing_table.forEach(function (value, key) {
-               console.log(key + ' => ' + value);
-           });
-       }
-    };
+/*
+// iterate through router array and 
+    build each router's network graph
+    */
+let buildNetworkGraph = function() {
+    arrRouters.forEach(function(router, router_id) {
+        console.log('\n' + router_id);
+        router.routing_table.forEach(function (value, key) {
+            console.log(key + ' => ' + value);
+        });
+    });
 };
 
 init();
