@@ -3,8 +3,15 @@ require('./router.js');
 let readline_sync = require("readline-sync");
 let readline = require("linebyline");
 const DEFAULT_COST = 1;
-let arrRouters = new Map();
-let router;
+// arrRouters is global coz it will be accessed inside Router class
+global.arrRouters = new Map();
+
+// The network at the very beginning, when the
+// app is initialized. This will work as the
+// adjacency list for all the routers to refer from.
+// <key: router id, value: [{directly connected router, last sequence#}]>
+let initial_network_graph = new Map(); 
+let router, directRouters = [];
 
 // method to bootstrap the App
 let init = function () {
@@ -26,14 +33,22 @@ let readNetworkFile = function () {
             if (router) {
                 // add router to array of routers
                 arrRouters.set(router.id, router);
+                initial_network_graph.set(router.id, directRouters);
+                directRouters = [];
             }
             router = new Router(elements[0], elements[1]);
         } else {
-            router.routing_table.set(elements[0], elements[1] || DEFAULT_COST);
+            //router.routing_table.set(elements[0], elements[1] || DEFAULT_COST);
+            directRouters.push({
+                'router_id' : elements[0],
+                'cost' : elements[1] || DEFAULT_COST,
+                'last_packet_sequence' : 0
+            });
         }
     }).on('end', function() {
         // add last initialized router to array
         arrRouters.set(router.id, router);
+        initial_network_graph.set(router.id, directRouters);        
         buildNetworkGraph();
         readUserOption();
     });
@@ -45,10 +60,7 @@ let readNetworkFile = function () {
 */
 let buildNetworkGraph = function() {
     arrRouters.forEach(function(router, router_id) {
-        console.log('\n' + router_id);
-        router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value);
-        });
+        router.network_graph = initial_network_graph;
     });
 };
 

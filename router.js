@@ -12,15 +12,23 @@ class Router {
     }
 
     originatePacket() {
+        let self = this;
         this.sequence_number++;
         let packet = new LSP(this.id, this.sequence_number);
-        let router_in_graph = this.network_graph.get(this.id);
-        let direct_nodes = router_in_graph.values();
+        // direct_nodes is an array
+        let direct_nodes = this.network_graph.get(this.id);
         
-        while (!direct_nodes.next().done) {
-            let direct_router = direct_nodes.next().value;
-            direct_router.receivePacket(packet, this.id); 
-        }
+        // call receive packet on each directly connected node
+        direct_nodes.forEach(function(connctedRouter) {
+            let router = arrRouters.get(connctedRouter.router_id);
+            let last_packet_sequence = connctedRouter.last_packet_sequence;
+
+            // check tick validity
+            if (last_packet_sequence === 0 || Math.abs(last_packet_sequence - router.sequence_number) <= 2) {
+                router.receivePacket(packet, self.id);
+                console.log("Origin Router: " + self.id + "|| Next Router: " + router.id);
+            }
+        });
     }
 
     receivePacket(packet, id) {
