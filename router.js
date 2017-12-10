@@ -1,5 +1,6 @@
 require('./lsp.js');
 require('./MinPriorityQueue.js');
+require('./linkedList.js');
 
 class Router {
     constructor(id, network) {
@@ -9,7 +10,7 @@ class Router {
         this.sequence_number = 1;
         // a dictionary that stores references to other connected routers
         this.routing_table = new Map(); // key: router id, value: {cost, outgoing_link}
-        this.direct_routers = new Map(); // key: router id, value: {cost, last_packet_sequence}
+        this.direct_routers = new Map(); // key: router id, value: {initital_cost, last_packet_sequence}
     }
 
     originatePacket() {
@@ -29,40 +30,53 @@ class Router {
                     console.log("Origin Router: " + self.id + "|| Next Router: " + router.id);
                 }
             });
+            console.log('All packets sent to directly connected routers.');
+            console.log('Now finding shortest routes to all connected.');
+            console.log(packet.list);
         }
     }
-  }
 
     receivePacket(packet, id) {
       // only receive the packet if the router is active
       if (this.active) {
         // Decrement Time To Live of the received LSP
         console.log(this.id,'received packet from ',id);
+        console.log(packet.ttl);
+        //TODO determine whether we should decrement ttl before or after checking for >0
         packet.ttl--;
+
+        console.log('Last seq of packet from this router');
+        console.log(this.direct_routers.get(id).last_packet_sequence);
+        console.log('This packet seq');
+        console.log(packet.sequence);
         // Send out LSP packet to all directly connected routers (but not the one it was sent from) if
         // (i) TTL > 0
         // and
         // (ii) no other packet with a higher sequence number was received from the sending router
-                            // - I'm not sure what that means though
-                      console.log(      this.network_graph.get(id).last_packet_sequence);
-                        console.log(    packet.sequence);
-      //  if (packet.ttl > 0 && this.network_graph.get(id).last_packet_sequence < packet.sequence){
-          console.log('in first if');
-          // add itself to the list of routers on this packet
-          packet.list.get(id).add(this.id,this.routing_table[id].cost);
+                            // - I'm not sure what that means though and when that would be the case
+        if (packet.ttl > 0 && this.direct_routers.get(id).last_packet_sequence < packet.sequence){
+          console.log('');
+          // add itself to the linked list of routers on this packet
+          if (!packet.list.get(id)){
+            let new_packet_list = new LinkedList();
+            packet.list.set(id,new_packet_list);
+          };
+          let edge_cost =this.routing_table.get(id).cost;
+          this.id,packet.list.get(id).add(this.id,edge_cost);
+          console.log(packet.list.get(id).print());
           //decrement the tick of the received router id
-          this.network_graph.get(id).last_packet_sequence = packet.sequence;
+          this.direct_routers.get(id).last_packet_sequence = packet.sequence;
           let self = this ;
           // send the pack to each of the directly connected routers
-          this.network_graph.forEach(function(value, router_id){
+          this.direct_routers.forEach(function(value, router_id){
             if (router_id != id){
-              console.log('in second if');
+              console.log(self.id,'sending packet to ',router_id);
               arrRouters.get(router_id).receivePacket(packet,self.id);
             }
           });
-      //  }
+        }
       }
 
-    };
-  }
+    }
+}
 global.Router = Router;

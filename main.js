@@ -35,7 +35,7 @@ let readNetworkFile = function () {
                 'outgoing_link': elements[0]
             };
             let direct_router = {
-                'cost': elements[1] || DEFAULT_COST,
+                'initial_cost': elements[1] || DEFAULT_COST,
                 'last_packet_sequence': 0
             }
             router.routing_table.set(elements[0], routing_info);

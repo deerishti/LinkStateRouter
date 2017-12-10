@@ -134,5 +134,4 @@ class Graph{
 
 }
 
-
-global.Graph = Graph
+global.Graph = Graph;
