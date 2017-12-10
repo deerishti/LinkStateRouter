@@ -21,12 +21,17 @@ class LinkedList {
     }
     while (currentNode.next) {
         currentNode = currentNode.next;
+        if (node.id = currentNode.id){
+          console.log('Node already exists')
+          return
+        }
     }
     currentNode.next = node;
     this._length++;
     return this.head;
   }
   print() {
+    console.log('Linked List:')
     let currentNode = this.head;
     if (!currentNode) {
         console.log('Empty list');

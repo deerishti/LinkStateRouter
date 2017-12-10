@@ -97,7 +97,7 @@ let readUserOption = function () {
 */
 let propagatePacket = function () {
     arrRouters.forEach(function(router, router_id) {
-      console.log('Sending packets from ',router_id);
+      console.log('Main Sending packets from ',router_id);
         router.originatePacket();
     });
 };
