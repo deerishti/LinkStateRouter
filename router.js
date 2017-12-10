@@ -31,9 +31,19 @@ class Router {
                 }
             });
             console.log('All packets sent to directly connected routers.');
-            console.log('Now finding shortest routes to all connected.');
-            console.log(packet.list);
-        }
+          //   console.log('Now finding shortest routes to all connected.');
+          //   console.log(packet.list);
+          //   let graph = new Graph(packet.list.keys);
+          //   packet.list.forEach(function(linked_list, source_vertex) {
+          //     let currentNode = linked_list.head;
+          //     while (currentNode.next) {
+          //       graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
+          //       currentNode = currentNode.next;
+          //     }
+          // });
+          // let dist = graph.dijkstra(this.id);
+          // console.log(dist);
+      }
     }
 
     receivePacket(packet, id) {
