@@ -92,24 +92,33 @@ class Graph{
   // add edge from source -> destination and destination -> source
   addEdge(src,dest,cost){
     let newNode = [dest,cost];
-    this.graph.set(src,this.graph.get(src).push(newNode));
+    if (this.graph.has(src)) {
+      this.graph.get(src).push(newNode);
+    } else {
+      this.graph.set(src, [newNode]);
+    }
 
     newNode = [src,cost];
-    this.graph.set(dest,this.graph.get(dest).push(newNode));
-
+    if (this.graph.has(dest)) {
+      this.graph.get(dest).push(newNode);
+    } else {
+      this.graph.set(dest, [newNode]);
+    }
   }
 
   dijkstra(src){
     let V = this.V;
+    console.log("This is V: " + V);
     let dist = [];
     // init with dist infinity to all except the source vertex
     let minHeap = new MinPriorityQueue();
     for(var v=0; v<V.length; v++){
       dist.shift(Infinity);
+      //console.log("Node: " + minHeap.newNode(V[v],dist[v]));
       minHeap.items.push(minHeap.newNode(V[v],dist[v]));
-      minHeap.pos.append(V[v]);
+      minHeap.pos.push(V[v]);
     }
-    console.log(minHeap.items);
+    console.log("MinHeap Items: " + minHeap.items);
     minHeap.pos[src] = src;
     dist[src] = 0;
     minHeap.decreaseKey(src, dist[src]);
