@@ -5,13 +5,7 @@ let readline = require("linebyline");
 const DEFAULT_COST = 1;
 // arrRouters is global coz it will be accessed inside Router class
 global.arrRouters = new Map();
-
-// The network at the very beginning, when the
-// app is initialized. This will work as the
-// adjacency list for all the routers to refer from.
-// <key: router id, value: [{directly connected router, last sequence#}]>
-let initial_network_graph = new Map(); 
-let router, directRouters = [];
+let router;
 
 // method to bootstrap the App
 let init = function () {
@@ -33,23 +27,24 @@ let readNetworkFile = function () {
             if (router) {
                 // add router to array of routers
                 arrRouters.set(router.id, router);
-                initial_network_graph.set(router.id, directRouters);
-                directRouters = [];
             }
             router = new Router(elements[0], elements[1]);
         } else {
-            //router.routing_table.set(elements[0], elements[1] || DEFAULT_COST);
-            directRouters.push({
-                'router_id' : elements[0],
-                'cost' : elements[1] || DEFAULT_COST,
-                'last_packet_sequence' : 0
-            });
+            let routing_info = {
+                'cost': elements[1] || DEFAULT_COST,
+                'outgoing_link': elements[0]
+            };
+            let direct_router = {
+                'cost': elements[1] || DEFAULT_COST,
+                'last_packet_sequence': 0
+            }
+            router.routing_table.set(elements[0], routing_info);
+            router.direct_routers.set(elements[0], direct_router);
         }
     }).on('end', function() {
         // add last initialized router to array
         arrRouters.set(router.id, router);
-        initial_network_graph.set(router.id, directRouters);        
-        buildNetworkGraph();
+        // buildNetworkGraph();
         readUserOption();
     });
 };
@@ -128,7 +123,7 @@ let printNetwork = function (id) {
     } else {
         let router = arrRouters.get(rID);
         router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value);
+            console.log(key + ' => ' + value.cost);
         });
     }
 };
