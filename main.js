@@ -18,7 +18,7 @@ let readNetworkFile = function () {
         readNetworkFile(); // keep calling recursively till user inputs a valid file
         return;
     });
-    
+
     readStream.on('line', function (line, lineCount, byteCount) {
         let currLine = line.trim().replace(/\s+/g, ' '); // collapses multiple whitespaces to one
         let elements = currLine.split(" ");
@@ -29,7 +29,12 @@ let readNetworkFile = function () {
             }
             router = new Router(elements[0], elements[1]);
         } else {
-            router.routing_table.set(elements[0], elements[1] || DEFAULT_COST);
+            router.routing_table.set(elements[0],
+                                    {'cost':elements[1] || DEFAULT_COST,
+                                    'outgoing_link':elements[0]});
+            router.network_graph.set(elements[0],
+                                    {'tick': 0,
+                                    'highest_lsp_seq':0});
         }
     }).on('end', function() {
         // add last initialized router to array
@@ -40,14 +45,14 @@ let readNetworkFile = function () {
 };
 
 /*
-    Iterate over arrRouters map and 
+    Iterate over arrRouters map and
     build each router's network graph
 */
 let buildNetworkGraph = function() {
     arrRouters.forEach(function(router, router_id) {
         console.log('\n' + router_id);
         router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value);
+            console.log(key + ' => ' + value.cost);
         });
     });
 };
@@ -57,7 +62,7 @@ let readUserOption = function () {
     console.log('\nQ to quit');
     console.log('\nC to continue');
     console.log("\nS followed by the router's ID to shut down the router");
-    console.log("\nT followed by the router's ID to start up the router");   
+    console.log("\nT followed by the router's ID to start up the router");
     console.log("\nP followed by the router's ID to print the routing table\n");
 
     let userEntry = readline_sync.question("I choose: ");
@@ -81,7 +86,7 @@ let readUserOption = function () {
 };
 
 /*
-    Iterate over arrRouters map and 
+    Iterate over arrRouters map and
     call each router's originatePacket()
 */
 let propagatePacket = function () {
@@ -115,7 +120,7 @@ let printNetwork = function (id) {
     } else {
         let router = arrRouters.get(rID);
         router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value);
+            console.log(key + ' => ' + value.outgoing_link);
         });
     }
 };

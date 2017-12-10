@@ -3,7 +3,7 @@ class LSP {
         this.origin_router_id = originID;
         this.sequence = seq;
         this.ttl = 10;
-        this.list = []; // treating the list as an Array for now list of SinglyLists
+        this.list = new Map(); // treating the list as an Array for now list of SinglyLists
     }
 };
 
@@ -17,7 +17,7 @@ class Node{
     this.next = null;
   }
 }
-class SinglyList() {
+class SinglyList{
   constructor(){
     this._length = 0;
     this.head = null;
