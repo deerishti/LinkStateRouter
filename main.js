@@ -10,7 +10,7 @@ global.arrRouters = new Map();
 // app is initialized. This will work as the
 // adjacency list for all the routers to refer from.
 // <key: router id, value: [{directly connected router, last sequence#}]>
-let initial_network_graph = new Map(); 
+let initial_network_graph = new Map();
 let router, directRouters = [];
 
 // method to bootstrap the App
@@ -25,7 +25,7 @@ let readNetworkFile = function () {
         readNetworkFile(); // keep calling recursively till user inputs a valid file
         return;
     });
-    
+
     readStream.on('line', function (line, lineCount, byteCount) {
         let currLine = line.trim().replace(/\s+/g, ' '); // collapses multiple whitespaces to one
         let elements = currLine.split(" ");
@@ -48,14 +48,14 @@ let readNetworkFile = function () {
     }).on('end', function() {
         // add last initialized router to array
         arrRouters.set(router.id, router);
-        initial_network_graph.set(router.id, directRouters);        
+        initial_network_graph.set(router.id, directRouters);
         buildNetworkGraph();
         readUserOption();
     });
 };
 
 /*
-    Iterate over arrRouters map and 
+    Iterate over arrRouters map and
     build each router's network graph
 */
 let buildNetworkGraph = function() {
@@ -70,7 +70,7 @@ let readUserOption = function () {
     console.log('\nQ to quit');
     console.log('\nC to continue');
     console.log("\nS followed by the router's ID to shut down the router");
-    console.log("\nT followed by the router's ID to start up the router");   
+    console.log("\nT followed by the router's ID to start up the router");
     console.log("\nP followed by the router's ID to print the routing table\n");
 
     let userEntry = readline_sync.question("I choose: ");
@@ -94,7 +94,7 @@ let readUserOption = function () {
 };
 
 /*
-    Iterate over arrRouters map and 
+    Iterate over arrRouters map and
     call each router's originatePacket()
 */
 let propagatePacket = function () {
