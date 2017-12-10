@@ -12,10 +12,15 @@ class Router {
     }
 
     originatePacket() {
-        // TODO:  
-        // generate and send an LSP packet to all directly connected routers based on the current state of the network in the        Routing_Table
         this.sequence_number++;
         let packet = new LSP(this.id, this.sequence_number);
+        let router_in_graph = this.network_graph.get(this.id);
+        let direct_nodes = router_in_graph.values();
+        
+        while (!direct_nodes.next().done) {
+            let direct_router = direct_nodes.next().value;
+            direct_router.receivePacket(packet, this.id); 
+        }
     }
 
     receivePacket(packet, id) {
