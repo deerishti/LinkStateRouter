@@ -60,7 +60,10 @@ let readNetworkFile = function () {
 */
 let buildNetworkGraph = function() {
     arrRouters.forEach(function(router, router_id) {
-        router.network_graph = initial_network_graph;
+        console.log('\n' + router_id);
+        router.routing_table.forEach(function (value, key) {
+            console.log(key + ' => ' + value.cost);
+        });
     });
 };
 
@@ -129,7 +132,7 @@ let printNetwork = function (id) {
     } else {
         let router = arrRouters.get(rID);
         router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value);
+            console.log(key + ' => ' + value.outgoing_link);
         });
     }
 };

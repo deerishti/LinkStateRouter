@@ -45,6 +45,7 @@ class Router {
         // console.log(costs);
 
     }
+  }
 
     receivePacket(packet, id) {
       // only receive the packet if the router is active
