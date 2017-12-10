@@ -25,8 +25,8 @@ class MinPriorityQueue{
 
     heapify(idx){
       let smallest = idx;
-      left = 2*idx + 1;
-      right = 2*idx + 2;
+      let left = 2*idx + 1;
+      let right = 2*idx + 2;
 
       if (left < this.n && this.items[left][1] <this.items[smallest][1]){
         smallest = left;
@@ -48,14 +48,13 @@ class MinPriorityQueue{
       if(this.IsEmpty()) {
           return;
       }
-      root = this.items[0];
+      let root = this.items[0];
 
-      lastNode = this.items[this.n-1];
+      let lastNode = this.items[this.n-1];
       this.items[0]=lastNode;
 
       this.pos[lastNode[0]]=0;
       this.pos[root[0]]=this.n-1
-
       this.n--;
       this.heapify(0);
 
@@ -63,7 +62,8 @@ class MinPriorityQueue{
     }
 
    decreaseKey(v,dist){
-     i = this.pos[v];
+     console.log(v);
+     let i = this.pos[v];
      this.items[i][1] = dist;
 
      while (i>0 && this.items[i][1]<this.items[(i-1)/2][1]){
@@ -78,27 +78,20 @@ class MinPriorityQueue{
      return this.pos[v]<this.n;
    }
 
-    toString() {
-        let array = [];
-        for (let index = 1; index < this.n + 1; index++) {
-          array.push(this.items[index].weight);
-        }
-        return array;
-    }
 };
 
 global.MinPriorityQueue = MinPriorityQueue;
 
 class Graph{
-  constructor(V){
-    // number of verticies
-    this.V = V;
+  constructor(verticies){
+    // list of verticies
+    this.V = verticies;
     // map with key of vertex id -> list of destinations and their cost
     this.graph = new Map();
   }
   // add edge from source -> destination and destination -> source
   addEdge(src,dest,cost){
-    newNode = [dest,cost];
+    let newNode = [dest,cost];
     this.graph.set(src,this.graph.get(src).push(newNode));
 
     newNode = [src,cost];
@@ -106,34 +99,39 @@ class Graph{
 
   }
 
-  dijkstra(src, adjacency_list){
-    sptSet = new Map()
-    V = this.V;
-    dist = [];
+  dijkstra(src){
+    let V = this.V;
+    let dist = [];
     // init with dist infinity to all except the source vertex
-    minHead = new MinPriorityQueue();
-    for(var v=0; v<V; v++){
-      if (src != V){
-        dist.shift(Infinity);
-      }else{
-        dist.shift(0);
-      }
-      minHeap.insert({root:v,weight:dist[v]});
+    let minHeap = new MinPriorityQueue();
+    for(var v=0; v<V.length; v++){
+      dist.shift(Infinity);
+      minHeap.items.push(minHeap.newNode(V[v],dist[v]));
+      minHeap.pos.append(V[v]);
     }
-    while (!minHeap.isEmpty){
-      newHeapNode = minHeap.DeleteMin();
-      u = newHeadNode[0];
-      for pCrawl in self.graph.get(u){
-          v = pCrawl[0];
+    console.log(minHeap.items);
+    minHeap.pos[src] = src;
+    dist[src] = 0;
+    minHeap.decreaseKey(src, dist[src]);
 
-          if minHeap.isInMinHeap(v) and dist[u] != Infinity and
-          pCrawl[1] + dist[u] < dist[v]{
+    minHeap.size = V.length;
+
+    while (!minHeap.isEmpty){
+      let newHeapNode = minHeap.deleteMin();
+      let u = newHeadNode[0];
+      for (pCrawl in self.graph.get(u)){
+          let v = pCrawl[0];
+
+          if (minHeap.isInMinHeap(v) && dist[u] != Infinity &&
+          pCrawl[1] + dist[u] < dist[v]){
             dist[v] = pCrawl[1] + dist[u];
             minHeap.decreaseKey(v,dist[v])
           }
       }
     }
+    return dist;
   }
+
 }
 
 
