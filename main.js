@@ -123,7 +123,7 @@ let printNetwork = function (id) {
     } else {
         let router = arrRouters.get(rID);
         router.routing_table.forEach(function (value, key) {
-            console.log(key + ' => ' + value.cost);
+            console.log(arrRouters.get(key).network + ' => ' + value.outgoing_link);
         });
     }
 };

@@ -26,6 +26,8 @@ class Router {
                 if (last_packet_sequence === 0 || Math.abs(last_packet_sequence - router.sequence_number) <= 2) {
                     router.receivePacket(packet, self.id);
                     console.log("Origin Router: " + self.id + "|| Next Router: " + router.id);
+                } else if (Math.abs(last_packet_sequence - router.sequence_number) > 2) {
+                    self.direct_routers.get(router_id).cost = Infinity;
                 }
             });
         }
