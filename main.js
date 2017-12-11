@@ -5,6 +5,7 @@ let readline = require("linebyline");
 const DEFAULT_COST = 1;
 // arrRouters is global coz it will be accessed inside Router class
 global.arrRouters = new Map();
+global.max_lsp_seq = 1;
 let router;
 
 // method to bootstrap the App
@@ -99,6 +100,7 @@ let propagatePacket = function () {
     arrRouters.forEach(function(router, router_id) {
       console.log('Main Sending packets from ',router_id);
         router.originatePacket();
+        max_lsp_seq++;
     });
 };
 
