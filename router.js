@@ -7,6 +7,7 @@ class Router {
         this.id = id;
         this.network = network;
         this.active = true;
+        this.sequence = 0;
         // a dictionary that stores references to other connected routers
         this.routing_table = new Map(); // key: router id, value: {cost, outgoing_link}
         this.direct_routers = new Map(); // key: router id, value: {initital_cost, last_packet_sequence}
@@ -15,13 +16,13 @@ class Router {
     originatePacket() {
         if (this.active) {
             let self = this;
-            let packet = new LSP(this.id, max_lsp_seq);
+            let packet = new LSP(this.id, this.sequence++);
             // call receive packet on each directly connected node
             this.direct_routers.forEach(function(router_details, router_id) {
                 let router = arrRouters.get(router_id);
                 let last_packet_sequence = router_details.last_packet_sequence;
 
-                if (last_packet_sequence === 0 || Math.abs(last_packet_sequence - max_lsp_seq) <= 2) {
+                if (last_packet_sequence === 0 || Math.abs(last_packet_sequence - this.sequence) <= 2) {
                     router.receivePacket(packet, self.id);
                     console.log("Origin Router: " + self.id + "|| Next Router: " + router.id);
                 }else{
@@ -43,6 +44,7 @@ class Router {
                 console.log('Edge created between ',source_vertex,currentNode.id);
                 graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
             });
+            console.log(graph.graph);
             let dist = graph.dijkstra(this.id);
             console.log(dist);
             }
@@ -59,7 +61,6 @@ class Router {
         // (ii) no other packet with a higher sequence number was received from the sending router
                             // - I'm not sure what that means though and when that would be the case
         if (packet.ttl > 0 && this.direct_routers.get(id).last_packet_sequence < packet.sequence){
-          console.log(this.id, 'received packet from',id);
           // Decrement Time To Live of the received LSP
           packet.ttl--;
           // add itself to the linked list of routers on this packet
@@ -70,7 +71,9 @@ class Router {
           let edge_cost =this.routing_table.get(id).cost;
           packet.list.get(id).add(this.id,edge_cost);
           //decrement the tick of the received router id
-          this.direct_routers.get(id).last_packet_sequence = packet.sequence;
+          if (id == packet.origin_router_id){
+            this.direct_routers.get(id).last_packet_sequence = packet.sequence;
+          }
           let self = this;
           // send the pack to each of the directly connected routers
           this.direct_routers.forEach(function(value, router_id){
