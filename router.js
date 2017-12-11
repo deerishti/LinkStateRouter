@@ -41,7 +41,43 @@ class Router {
                   router_details.cost = Infinity;
                 }
             });
-              console.log('Now finding shortest routes to all connected.');
+      }
+    }
+
+    receivePacket(packet, id) {
+      // only receive the packet if the router is active
+      if (this.active) {
+        // Decrement Time To Live of the received LSP
+        packet.ttl--;
+        let recalculate_network = false;
+        // Send out LSP packet to all directly connected routers (but not the one it was sent from) if
+        // (i) TTL > 0
+        // and
+        // (ii) no other packet with a higher sequence number was received from the original sending router
+
+        // figure out if this is a packet from a new router
+        if (!this.connected_routers.get(packet.origin_router_id)){
+          this.connected_routers.set(packet.origin_router_id,{'last_packet_sequence':0,
+                                                              'network_name':packet.network_str,
+                                                              'cost':-1,
+                                                              'outgoing_link':'unknown'});
+          this.adjacency_list.set(packet.origin_router_id,new LinkedList());
+          recalculate_network = true;
+        };
+        if (packet.ttl > 0 && this.connected_routers.get(packet.origin_router_id).last_packet_sequence < packet.sequence){
+          let self = this;
+
+          packet.list.forEach(function(value,router_id){
+            // try and add to the routers adjacency_list and determine if there is any new information
+            if (self.adjacency_list.get(packet.origin_router_id).add(router_id,value.cost,value.network)){
+              recalculate_network = true;
+            };
+          });
+          //update the last packet sequence of the origin router
+          this.connected_routers.get(packet.origin_router_id).last_packet_sequence = packet.sequence;
+
+          // there is new information
+          if (recalculate_network){
               console.log(this.adjacency_list);
               let graph = new Graph(Array.from(this.adjacency_list));
               this.adjacency_list.forEach(function(linked_list, source_vertex) {
@@ -57,36 +93,10 @@ class Router {
             console.log(graph.graph);
             let dist = graph.dijkstra(this.id);
             console.log(dist);
+          }
 
 
-      }
-    }
 
-    receivePacket(packet, id) {
-      // only receive the packet if the router is active
-      if (this.active) {
-        // Decrement Time To Live of the received LSP
-        packet.ttl--;
-        // Send out LSP packet to all directly connected routers (but not the one it was sent from) if
-        // (i) TTL > 0
-        // and
-        // (ii) no other packet with a higher sequence number was received from the original sending router
-        if (!this.connected_routers.get(packet.origin_router_id)){
-          this.connected_routers.set(packet.origin_router_id,{'last_packet_sequence':0,
-                                                              'network_name':packet.network_str,
-                                                              'cost':-1,
-                                                              'outgoing_link':'unknown'});
-          this.adjacency_list.set(packet.origin_router_id,new LinkedList());
-        };
-        if (packet.ttl > 0 && this.connected_routers.get(packet.origin_router_id).last_packet_sequence < packet.sequence){
-          let self = this;
-
-          packet.list.forEach(function(value,router_id){
-            // try and add to the routers adjacency_list
-            self.adjacency_list.get(packet.origin_router_id).add(router_id,value.cost,value.network);
-          });
-          //update the last packet sequence of the origin router
-          this.connected_routers.get(packet.origin_router_id).last_packet_sequence = packet.sequence;
           // send the packet to each of its directly connected routers but not the one it received it from
           this.direct_routers.forEach(function(value, router_id){
             if (router_id != id){

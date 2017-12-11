@@ -13,23 +13,29 @@ class LinkedList {
     this.head = null;
   }
   add(id,cost,name) {
-    var node = new Node(id,cost,name),
+    let node = new Node(id,cost,name),
         currentNode = this.head;
     if (!currentNode) {
         this.head = node;
         this._length++;
-        return node;
+        return true;
     }
     while (currentNode.next) {
         currentNode = currentNode.next;
-        if (node.id = currentNode.id){
-          console.log('Node already exists');
-          return;
+        if (node.id == currentNode.id){
+          if (node.cost == currentNode.cost){
+            // node already exists
+            return false;
+          }else{
+            // update cost
+            currentNode.cost = node.cost;
+            return true;
+          }
         }
     }
     currentNode.next = node;
     this._length++;
-    return this.head;
+    return true;
   }
   print() {
     console.log('Linked List:')
