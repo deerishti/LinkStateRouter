@@ -48,8 +48,7 @@ let readNetworkFile = function () {
 
             router.connected_routers.set(elements[0], routing_info);
             router.direct_routers.set(elements[0], direct_router);
-            router.initital_routers.set(elements[0], initial_router);
-
+            router.initial_routers.set(elements[0], initial_router);
         };
     }).on('end', function() {
         // add last initialized router to array
