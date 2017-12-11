@@ -82,7 +82,7 @@ class Router {
           if (recalculate_network){
             console.log('recalculating inside',this.id);
               console.log(this.adjacency_list);
-              let graph = new Graph(Array.from(this.adjacency_list.keys));
+              let graph = new Graph(Array.from(this.adjacency_list.keys()));
               this.adjacency_list.forEach(function(linked_list, source_vertex) {
                 let currentNode = linked_list.head;
                 while (currentNode.next) {
