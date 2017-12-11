@@ -85,13 +85,24 @@ global.MinPriorityQueue = MinPriorityQueue;
 class Graph{
   constructor(verticies){
     // list of verticies
-    this.V = verticies;
+    this.verticies = verticies;
+    this.V = verticies.length;
+    // map verticies to an internal id from 0 -> num verticies - 1
+    this.vertex_to_id = new Map();
+    this.id_to_vertex = new Map();
+    for (var v=0; v<this.V; v++){
+      this.vertex_to_id.set(verticies[v],v);
+      this.id_to_vertex.set(v,verticies[v]);
+    };
     // map with key of vertex id -> list of destinations and their cost
     this.graph = new Map();
   }
   // add edge from source -> destination and destination -> source
-  addEdge(src,dest,cost){
+  addEdge(src_vertex,dest_vertex,cost){
+    let src = this.vertex_to_id.get(src_vertex);
+    let dest = this.vertex_to_id.get(dest_vertex);
     let newNode = [dest,cost];
+
     if (this.graph.has(src)) {
       this.graph.get(src).push(newNode);
     } else {
@@ -106,24 +117,25 @@ class Graph{
     }
   }
 
-  dijkstra(src){
+  dijkstra(src_vertex){
+    let src = this.vertex_to_id.get(src_vertex);
     let V = this.V;
     console.log("This is V: " + V);
     let dist = [];
     // init with dist infinity to all except the source vertex
     let minHeap = new MinPriorityQueue();
-    for(var v=0; v<V.length; v++){
-      dist.shift(Infinity);
+    for(var v=0; v<V; v++){
+      dist.push(Infinity);
       //console.log("Node: " + minHeap.newNode(V[v],dist[v]));
-      minHeap.items.push(minHeap.newNode(V[v],dist[v]));
-      minHeap.pos.push(V[v]);
+      minHeap.items.push(minHeap.newNode(v,dist[v]));
+      minHeap.pos.push(v);
     }
     console.log("MinHeap Items: " + minHeap.items);
     minHeap.pos[src] = src;
     dist[src] = 0;
     minHeap.decreaseKey(src, dist[src]);
 
-    minHeap.size = V.length;
+    minHeap.size = V;
 
     while (!minHeap.isEmpty){
       let newHeapNode = minHeap.deleteMin();

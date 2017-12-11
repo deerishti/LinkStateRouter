@@ -32,38 +32,44 @@ class Router {
             });
             console.log('All packets sent to directly connected routers.');
             console.log('Now finding shortest routes to all connected.');
-            console.log(packet.list);
-            let graph = new Graph(Array.from(packet.list.keys()))
-            //let graph = new Graph(packet.list.keys);
-            packet.list.forEach(function(linked_list, source_vertex) {
-              let currentNode = linked_list.head;
-              while (currentNode.next) {
-                graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
-                currentNode = currentNode.next;
-              }
-          });
-          let dist = graph.dijkstra(this.id);
-          console.log(dist);
+            if (packet.list.size >0 ){
+              console.log(packet.list);
+              let graph = new Graph(Array.from(packet.list.keys()))
+              //let graph = new Graph(packet.list.keys);
+              packet.list.forEach(function(linked_list, source_vertex) {
+                let currentNode = linked_list.head;
+                while (currentNode.next) {
+                  console.log('Edge created between ',source_vertex,currentNode.id);
+                  graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
+                  currentNode = currentNode.next;
+
+                }
+            });
+            let dist = graph.dijkstra(this.id);
+            console.log(dist);
+            }
+
       }
     }
 
     receivePacket(packet, id) {
       // only receive the packet if the router is active
       if (this.active) {
-        // Decrement Time To Live of the received LSP
-        console.log(this.id,'received packet from ',id);
-        console.log('TTL',packet.ttl);
-        //TODO determine whether we should decrement ttl before or after checking for >0
-        packet.ttl--;
 
-        console.log('Last seq of packet from this router',this.direct_routers.get(id).last_packet_sequence);
-        console.log('This packet seq',packet.sequence);
         // Send out LSP packet to all directly connected routers (but not the one it was sent from) if
         // (i) TTL > 0
         // and
         // (ii) no other packet with a higher sequence number was received from the sending router
                             // - I'm not sure what that means though and when that would be the case
         if (packet.ttl > 0 && this.direct_routers.get(id).last_packet_sequence < packet.sequence){
+          console.log(this.id,'received packet from ',id);
+          console.log('TTL',packet.ttl);
+          // Decrement Time To Live of the received LSP
+          //TODO determine whether we should decrement ttl before or after checking for >0
+
+          console.log('Last seq of packet from this router',this.direct_routers.get(id).last_packet_sequence);
+          console.log('This packet seq',packet.sequence);
+          packet.ttl--;
           // add itself to the linked list of routers on this packet
           if (!packet.list.get(id)){
             console.log('Adding new linked list for recipient router ',id, 'from ',packet.origin_router_id);
