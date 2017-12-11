@@ -16,9 +16,8 @@ class Router {
     originatePacket() {
         if (this.active) {
             let self = this;
-            this.sequence_number++;
             let packet = new LSP(this.id, this.sequence_number);
-
+            this.sequence_number++;
             // call receive packet on each directly connected node
             this.direct_routers.forEach(function(router_details, router_id) {
                 let router = arrRouters.get(router_id);
@@ -42,8 +41,9 @@ class Router {
                   console.log('Edge created between ',source_vertex,currentNode.id);
                   graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
                   currentNode = currentNode.next;
-
                 }
+                console.log('Edge created between ',source_vertex,currentNode.id);
+                graph.addEdge(source_vertex,currentNode.id,currentNode.cost);
             });
             let dist = graph.dijkstra(this.id);
             console.log(dist);
@@ -55,20 +55,18 @@ class Router {
     receivePacket(packet, id) {
       // only receive the packet if the router is active
       if (this.active) {
-
+        console.log('************ ');
+        console.log('Last seq of packet, this pack seq');
+        console.log(this.direct_routers.get(id).last_packet_sequence,packet.sequence);
+        console.log('TTL',packet.ttl);
         // Send out LSP packet to all directly connected routers (but not the one it was sent from) if
         // (i) TTL > 0
         // and
         // (ii) no other packet with a higher sequence number was received from the sending router
                             // - I'm not sure what that means though and when that would be the case
         if (packet.ttl > 0 && this.direct_routers.get(id).last_packet_sequence < packet.sequence){
-          console.log(this.id,'received packet from ',id);
-          console.log('TTL',packet.ttl);
+          console.log('Forwarding received packet');
           // Decrement Time To Live of the received LSP
-          //TODO determine whether we should decrement ttl before or after checking for >0
-
-          console.log('Last seq of packet from this router',this.direct_routers.get(id).last_packet_sequence);
-          console.log('This packet seq',packet.sequence);
           packet.ttl--;
           // add itself to the linked list of routers on this packet
           if (!packet.list.get(id)){
@@ -79,10 +77,10 @@ class Router {
           let edge_cost =this.routing_table.get(id).cost;
           packet.list.get(id).add(this.id,edge_cost);
           console.log('Current Packet List for incoming router id');
-          console.log(packet.list.get(id).print());
+          console.log(packet.list);
           //decrement the tick of the received router id
           this.direct_routers.get(id).last_packet_sequence = packet.sequence;
-          let self = this ;
+          let self = this;
           // send the pack to each of the directly connected routers
           this.direct_routers.forEach(function(value, router_id){
             if (router_id != id){

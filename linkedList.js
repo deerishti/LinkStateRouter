@@ -21,10 +21,7 @@ class LinkedList {
     }
     while (currentNode.next) {
         currentNode = currentNode.next;
-        if (node.id = currentNode.id){
-          console.log('Node already exists')
-          return
-        }
+        
     }
     currentNode.next = node;
     this._length++;
