@@ -1,7 +1,8 @@
 class Node {
-  constructor(id,cost) {
+  constructor(id,cost,name) {
     this.id = id;
     this.cost = cost;
+    this.name = name;
     this.next = null;
   }
 };
@@ -11,8 +12,8 @@ class LinkedList {
     this._length = 0;
     this.head = null;
   }
-  add(id,cost) {
-    var node = new Node(id,cost),
+  add(id,cost,name) {
+    var node = new Node(id,cost,name),
         currentNode = this.head;
     if (!currentNode) {
         this.head = node;
