@@ -20,8 +20,8 @@ class Router {
     init_adjacency(){
       let self = this;
       self.adjacency_list.set(this.id,new LinkedList());
-      this.direct_router.forEach(function(value,dest_id){
-        self.adjacency_list.get(this.id).add(dest_id,value.cost,value.network_name);
+      this.direct_routers.forEach(function(value,dest_id){
+        self.adjacency_list.get(self.id).add(dest_id,value.cost,value.network_name);
       });
     }
 
@@ -61,9 +61,11 @@ class Router {
                                                               'network_name':packet.network_str,
                                                               'cost':-1,
                                                               'outgoing_link':'unknown'});
-          this.adjacency_list.set(packet.origin_router_id,new LinkedList());
           recalculate_network = true;
-        };
+        }
+        if (!this.adjacency_list.get(packet.origin_router_id)){
+          this.adjacency_list.set(packet.origin_router_id,new LinkedList());
+        }
         if (packet.ttl > 0 && this.connected_routers.get(packet.origin_router_id).last_packet_sequence < packet.sequence){
           let self = this;
 
@@ -78,8 +80,9 @@ class Router {
 
           // there is new information
           if (recalculate_network){
+            console.log('recalculating inside',this.id);
               console.log(this.adjacency_list);
-              let graph = new Graph(Array.from(this.adjacency_list));
+              let graph = new Graph(Array.from(this.adjacency_list.keys));
               this.adjacency_list.forEach(function(linked_list, source_vertex) {
                 let currentNode = linked_list.head;
                 while (currentNode.next) {

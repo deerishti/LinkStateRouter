@@ -85,6 +85,7 @@ global.MinPriorityQueue = MinPriorityQueue;
 class Graph{
   constructor(verticies){
     // list of verticies
+    console.log(verticies);
     this.verticies = verticies;
     this.V = verticies.length;
     // map verticies to an internal id from 0 -> num verticies - 1
@@ -101,8 +102,8 @@ class Graph{
   addEdge(src_vertex,dest_vertex,cost){
     let src = this.vertex_to_id.get(src_vertex);
     let dest = this.vertex_to_id.get(dest_vertex);
+    console.log(src,dest,cost);
     let newNode = [dest,cost];
-
     if (this.graph.has(src)) {
       this.graph.get(src).push(newNode);
     } else {
