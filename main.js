@@ -26,23 +26,34 @@ let readNetworkFile = function () {
         if (elements.length > 1 && isNaN(elements[1])) { // isNaN is to check if line contains network name
             if (router) {
                 // add router to array of routers
+                router.init_adjacency();
                 arrRouters.set(router.id, router);
             }
             router = new Router(elements[0], elements[1]);
         } else {
             let routing_info = {
                 'cost': elements[1] || DEFAULT_COST,
-                'outgoing_link': elements[0]
+                'outgoing_link': elements[0],
+                'network_name':'unknown',
+                'last_packet_sequence':0
             };
             let direct_router = {
-                'initial_cost': elements[1] || DEFAULT_COST,
-                'last_packet_sequence': 0
-            }
-            router.routing_table.set(elements[0], routing_info);
+                'cost': elements[1] || DEFAULT_COST,
+                'last_packet_sequence': 0,
+                'network_name':'unknown'
+            };
+            let initial_router = {
+              'initial_cost' : elements[1]
+            };
+
+            router.connected_routers.set(elements[0], routing_info);
             router.direct_routers.set(elements[0], direct_router);
-        }
+            router.initital_routers.set(elements[0], initial_router);
+
+        };
     }).on('end', function() {
         // add last initialized router to array
+        router.init_adjacency();
         arrRouters.set(router.id, router);
         // buildNetworkGraph();
         readUserOption();

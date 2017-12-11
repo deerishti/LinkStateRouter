@@ -9,12 +9,20 @@ class Router {
         this.active = true;
         this.sequence_number = 1;
         // a dictionary that stores references to other connected routers
-        this.routing_table = new Map(); // key: router id, value: {cost, outgoing_link}
+      //  this.routing_table = new Map(); // key: router id, value: {cost, outgoing_link}
         this.initial_routers = new Map(); // key: router id, value: {initital_cost}
         this.direct_routers = new Map(); // key: router id, value: {cost, last_packet_sequence}
 
-        this.connected_routers = new Map(); // key router_id, value {network_name,last_packet_sequence}
+        this.connected_routers = new Map(); // key router_id, value {network_name,last_packet_sequence,cost,outgoing_link}
         this.adjacency_list = new Map(); // key source_id, value {dest_id,cost}
+    }
+
+    init_adjacency(){
+      let self = this;
+      self.adjacency_list.set(this.id,new LinkedList());
+      this.direct_router.forEach(function(value,dest_id){
+        self.adjacency_list.get(this.id).add(dest_id,value.cost,value.network_name);
+      });
     }
 
     originatePacket() {
@@ -33,8 +41,7 @@ class Router {
                   router_details.cost = Infinity;
                 }
             });
-            console.log('Now finding shortest routes to all connected.');
-            if (this.adjacency_list.size >0 ){
+              console.log('Now finding shortest routes to all connected.');
               console.log(this.adjacency_list);
               let graph = new Graph(Array.from(this.adjacency_list));
               this.adjacency_list.forEach(function(linked_list, source_vertex) {
@@ -50,7 +57,7 @@ class Router {
             console.log(graph.graph);
             let dist = graph.dijkstra(this.id);
             console.log(dist);
-            }
+
 
       }
     }
@@ -65,7 +72,10 @@ class Router {
         // and
         // (ii) no other packet with a higher sequence number was received from the original sending router
         if (!this.connected_routers.get(packet.origin_router_id)){
-          this.connected_routers.set(packet.origin_router_id,{'last_packet_sequence':0,'network_name':packet.network_str});
+          this.connected_routers.set(packet.origin_router_id,{'last_packet_sequence':0,
+                                                              'network_name':packet.network_str,
+                                                              'cost':-1,
+                                                              'outgoing_link':'unknown'});
           this.adjacency_list.set(packet.origin_router_id,new LinkedList());
         };
         if (packet.ttl > 0 && this.connected_routers.get(packet.origin_router_id).last_packet_sequence < packet.sequence){
